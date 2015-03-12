@@ -184,4 +184,68 @@ class Block extends BlocksAppModel {
 		return $block;
 	}
 
+	public function getBlocksByFrame($roomId, $pluginKey){
+		$options = array(
+			'recursive' => -1,
+			'conditions' => array(
+				'room_id' => $roomId,
+				'plugin_key' => $pluginKey,
+			));
+
+		return $this->find('all', $options);
+	}
+
+	public function getEditBlock($blockId, $roomId, $pluginKey){
+		$options = array(
+			'recursive' => -1,
+			'conditions' => array(
+				'id' => $blockId,
+				'room_id' => $roomId,
+				'plugin_key' => $pluginKey,
+			));
+		$block =  $this->find('first', $options);
+
+		if (! $block) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		$format = 'Y/m/d H:i';
+		$block['Block']['from'] = $this->__formatStrDate($block['Block']['from'], $format);
+		$block['Block']['to'] = $this->__formatStrDate($block['Block']['to'], $format);
+		return $block;
+	}
+
+	public function saveBlock ($data, $frame) {
+		//トランザクションBegin
+		$dataSource = $this->getDataSource();
+		$dataSource->begin();
+
+		try {
+			if (empty($data['Block']['id'])) {
+				$data['Block']['language_id'] = $frame['Frame']['language_id'];
+				$data['Block']['room_id'] = $frame['Frame']['room_id'];
+				$data['Block']['plugin_key'] = $frame['Frame']['plugin_key'];
+				$data['Block']['key'] = Security::hash('block' . mt_rand() . microtime(), 'md5');
+			}
+			// バリデーション
+
+			$this->save($data);
+//			if (! $this->save(null, false)) {
+//				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+//			}
+			$dataSource->commit();
+		} catch (Exception $ex) {
+			$dataSource->rollback();
+			CakeLog::error($ex);
+			throw $ex;
+		}
+	}
+
+	private function __formatStrDate ($str, $format) {
+		$timestamp = strtotime($str);
+		if ($timestamp === false) {
+			return null;
+		}
+		return date($format, $timestamp);
+	}
 }
