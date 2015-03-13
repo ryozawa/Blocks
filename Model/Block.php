@@ -116,7 +116,6 @@ class Block extends BlocksAppModel {
 		)
 	);
 
-
 /**
  * Called during validation operations, before validation. Please note that custom
  * validation rules can be defined in $validate.
@@ -292,10 +291,10 @@ class Block extends BlocksAppModel {
 			}
 
 			if (empty($data['Block']['id'])) {
-				$data['Block']['language_id'] = $frame['Frame']['language_id'];
-				$data['Block']['room_id'] = $frame['Frame']['room_id'];
-				$data['Block']['plugin_key'] = $frame['Frame']['plugin_key'];
-				$data['Block']['key'] = Security::hash('block' . mt_rand() . microtime(), 'md5');
+				$this->data['Block']['language_id'] = $frame['Frame']['language_id'];
+				$this->data['Block']['room_id'] = $frame['Frame']['room_id'];
+				$this->data['Block']['plugin_key'] = $frame['Frame']['plugin_key'];
+				$this->data['Block']['key'] = Security::hash('block' . mt_rand() . microtime(), 'md5');
 			}
 
 			if (! $this->save(null, false)) {
