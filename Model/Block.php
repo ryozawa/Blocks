@@ -116,6 +116,67 @@ class Block extends BlocksAppModel {
 		)
 	);
 
+
+/**
+ * Called during validation operations, before validation. Please note that custom
+ * validation rules can be defined in $validate.
+ *
+ * @param array $options Options passed from Model::save().
+ * @return bool True if validate operation should continue, false to abort
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
+ * @see Model::save()
+ */
+	public function beforeValidate($options = array()) {
+		$this->validate = Hash::merge($this->validate, array(
+			'name' => array(
+				'notEmpty' => array(
+					'rule' => array('notEmpty'),
+					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('Blocks', 'name')),
+					'required' => false,
+				),
+			),
+			'public_type' => array(
+				'notEmpty' => array(
+					'rule' => array('notEmpty'),
+					'message' => __d('net_commons', 'Invalid request.'),
+				),
+				'inList' => array(
+					'rule' => array('inList', array('0', '1', '2')),
+					'message' => __d('net_commons', 'Invalid request.'),
+				),
+			),
+			'from' => array(
+				'datetime' => array(
+					'rule' => array('datetime', 'ymd'),
+					'message' => __d('net_commons', 'Invalid request.'),
+					'required' => false,
+				),
+			),
+			'to' => array(
+				'datetime' => array(
+					'rule' => array('datetime', 'ymd'),
+					'message' => __d('net_commons', 'Invalid request.'),
+					'required' => false,
+				),
+				'custom' => array(
+					'rule' => array('checkFromTo', 'Block'),
+					'message' => '開始日より大きい日付を入力してください。',
+				),
+			),
+		));
+
+		return parent::beforeValidate($options);
+	}
+
+	public function checkFromTo($target, $modelName) {
+		$from = $this->data[$modelName]['from'];
+		$to = $this->data[$modelName]['to'];
+		if ($from <= $to) {
+			return true;
+		}
+		return false;
+	}
+
 /**
  * before save
  *
@@ -161,7 +222,7 @@ class Block extends BlocksAppModel {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
 
-		if (isset($frame['Frame']['block_id']) && (int)$frame['Frame']['block_id'] > 0) {
+		if (isset($frame['Frame']['block_id'])) {
 			return $this->findById(is_int($frame['Frame']['block_id']) ? (int)$frame['Frame']['block_id'] : $frame['Frame']['block_id']);
 		}
 
@@ -219,20 +280,27 @@ class Block extends BlocksAppModel {
 		//トランザクションBegin
 		$dataSource = $this->getDataSource();
 		$dataSource->begin();
-
 		try {
+			if ($data['Block']['public_type'] !== '2') {
+				unset($data['Block']['from']);
+				unset($data['Block']['to']);
+			}
+
+			// バリデーション
+			if (! $this->__validateBlock($data)) {
+				return false;
+			}
+
 			if (empty($data['Block']['id'])) {
 				$data['Block']['language_id'] = $frame['Frame']['language_id'];
 				$data['Block']['room_id'] = $frame['Frame']['room_id'];
 				$data['Block']['plugin_key'] = $frame['Frame']['plugin_key'];
 				$data['Block']['key'] = Security::hash('block' . mt_rand() . microtime(), 'md5');
 			}
-			// バリデーション
 
-			$this->save($data);
-//			if (! $this->save(null, false)) {
-//				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-//			}
+			if (! $this->save(null, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
 			$dataSource->commit();
 		} catch (Exception $ex) {
 			$dataSource->rollback();
@@ -247,5 +315,17 @@ class Block extends BlocksAppModel {
 			return null;
 		}
 		return date($format, $timestamp);
+	}
+
+/**
+ * validate block
+ *
+ * @param array $data received post data
+ * @return bool True on success, false on error
+ */
+	public function __validateBlock($data) {
+		$this->set($data);
+		$this->validates();
+		return $this->validationErrors ? false : true;
 	}
 }
