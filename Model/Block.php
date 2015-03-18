@@ -167,6 +167,13 @@ class Block extends BlocksAppModel {
 		return parent::beforeValidate($options);
 	}
 
+/**
+ * custom validate check from to
+ *
+ * @param array $target target form
+ * @param string $modelName model name
+ * @return bool True if the operation should continue, false if it should abort
+ */
 	public function checkFromTo($target, $modelName) {
 		$from = $this->data[$modelName]['from'];
 		$to = $this->data[$modelName]['to'];
@@ -244,7 +251,14 @@ class Block extends BlocksAppModel {
 		return $block;
 	}
 
-	public function getBlocksByFrame($roomId, $pluginKey){
+/**
+ * get blocks by frame
+ *
+ * @param int $roomId rooms.id
+ * @param string $pluginKey plugins.key
+ * @return array block data
+ */
+	public function getBlocksByFrame($roomId, $pluginKey) {
 		$options = array(
 			'recursive' => -1,
 			'conditions' => array(
@@ -255,7 +269,16 @@ class Block extends BlocksAppModel {
 		return $this->find('all', $options);
 	}
 
-	public function getEditBlock($blockId, $roomId, $pluginKey){
+/**
+ * get block
+ *
+ * @param int $blockId blocks.id
+ * @param int $roomId rooms id
+ * @param string $pluginKey plugin key
+ * @return array block data
+ * @throws InternalErrorException
+ */
+	public function getEditBlock($blockId, $roomId, $pluginKey) {
 		$options = array(
 			'recursive' => -1,
 			'conditions' => array(
@@ -263,8 +286,7 @@ class Block extends BlocksAppModel {
 				'room_id' => $roomId,
 				'plugin_key' => $pluginKey,
 			));
-		$block =  $this->find('first', $options);
-
+		$block = $this->find('first', $options);
 		if (! $block) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
@@ -275,12 +297,20 @@ class Block extends BlocksAppModel {
 		return $block;
 	}
 
-	public function saveBlock ($data, $frame) {
+/**
+ * save block
+ *
+ * @param array $data received post data
+ * @param array $frame frames data
+ * @return bool True on success, false on error
+ * @throws InternalErrorException
+ */
+	public function saveBlock($data, $frame) {
 		//トランザクションBegin
 		$dataSource = $this->getDataSource();
 		$dataSource->begin();
 		try {
-			if ($data['Block']['public_type'] !== '2') {
+			if ($data['Block']['public_type'] !== BlockCommonComponent::TYPE_LIMITED_PUBLIC) {
 				unset($data['Block']['from']);
 				unset($data['Block']['to']);
 			}
@@ -301,6 +331,7 @@ class Block extends BlocksAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			$dataSource->commit();
+			return true;
 		} catch (Exception $ex) {
 			$dataSource->rollback();
 			CakeLog::error($ex);
@@ -308,7 +339,14 @@ class Block extends BlocksAppModel {
 		}
 	}
 
-	private function __formatStrDate ($str, $format) {
+/**
+ * format string date
+ *
+ * @param string $str string date
+ * @param string $format date format
+ * @return string format date
+ */
+	private function __formatStrDate($str, $format) {
 		$timestamp = strtotime($str);
 		if ($timestamp === false) {
 			return null;
@@ -322,7 +360,7 @@ class Block extends BlocksAppModel {
  * @param array $data received post data
  * @return bool True on success, false on error
  */
-	public function __validateBlock($data) {
+	private function __validateBlock($data) {
 		$this->set($data);
 		$this->validates();
 		return $this->validationErrors ? false : true;

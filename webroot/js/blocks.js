@@ -10,20 +10,21 @@ NetCommonsApp.controller('BlocksController', function($scope, dialogs, $http) {
   $scope.blocks = {};
   $scope.block = {};
   $scope.orderByField = 'block.name';
-  $scope.reverseSort = false;
+  $scope.isOrderDesc = false;
 
   $scope.parseDate = function(d) {
-    rep = d.replace( /-/g, "/" );
+    rep = d.replace(/-/g, '/');
     var date = Date.parse(rep);
     return new Date(date);
-  }
+  };
 
-  $scope.orderBlock = function(field){
-    $scope.reverseSort = ($scope.orderByField === field)? !$scope.reverseSort : false;
+  $scope.orderBlock = function(field) {
+    $scope.isOrderDesc =
+        ($scope.orderByField === field) ? !$scope.isOrderDesc : false;
     $scope.orderByField = field;
-  }
+  };
 
-  $scope.setBlock = function(frameId, blockId){
+  $scope.setBlock = function(frameId, blockId) {
     $http.post('/frames/frames/setBlock/' + frameId + '/' + blockId)
       .success(function(data, status, headers, config) {
           $scope.flash.success(data.name);
@@ -33,7 +34,7 @@ NetCommonsApp.controller('BlocksController', function($scope, dialogs, $http) {
         });
   };
 
-  $scope.showCalendar = function($event, type){
+  $scope.showCalendar = function($event, type) {
     $event.stopPropagation();
     if (type === 'from') {
       $scope.isFrom = !$scope.isFrom;
@@ -43,13 +44,13 @@ NetCommonsApp.controller('BlocksController', function($scope, dialogs, $http) {
   };
 })
 .config(function(datepickerConfig, datepickerPopupConfig) {
-  angular.extend(datepickerConfig, {
-    formatMonth: 'yyyy / MM',
-    formatDayTitle: 'yyyy / MM',
-    showWeeks: false
-  });
-  angular.extend(datepickerPopupConfig, {
-    datepickerPopup: 'yyyy/MM/dd HH:mm',
-    showButtonBar: false
-  });
-});
+      angular.extend(datepickerConfig, {
+        formatMonth: 'yyyy / MM',
+        formatDayTitle: 'yyyy / MM',
+        showWeeks: false
+      });
+      angular.extend(datepickerPopupConfig, {
+        datepickerPopup: 'yyyy/MM/dd HH:mm',
+        showButtonBar: false
+      });
+    });

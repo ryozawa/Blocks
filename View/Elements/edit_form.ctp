@@ -1,13 +1,22 @@
-<?php echo $this->Form->hidden('Block.id',
-	array(
-		'value' => $block['id'],
-	)); ?>
+<?php
+/**
+ * block edit form template
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Ryo Ozawa <ozawa.ryo@withone.co.jp>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
+ */
+?>
+
+<?php echo $this->Form->hidden('Block.id', array('value' => $block['id'])); ?>
 
 <div class="form-group">
 	<?php echo $this->Form->input('Block.name',
 		array(
 			'type' => 'text',
-			'label' => '名称',
+			'label' => $nameLabel,
 			'class' => 'form-control',
 			'error' => false,
 			'ng-model' => 'block.name',
@@ -24,20 +33,31 @@
 </div>
 
 <div class="form-group">
-	<label>公開設定</label><br/>
+	<div>
+		<label>
+			<?php echo __d('blocks', 'Public Setting'); ?>
+		</label>
+	</div>
 	<?php echo $this->Form->input('Block.public_type',
 		array(
 			'type' => 'radio',
-			'options' => array('0' => '非公開', '1' => '公開', '2' => '期間限定公開'),
+			'options' => array(
+				BlockCommonComponent::TYPE_PRIVATE => __d('blocks', 'Private'),
+				BlockCommonComponent::TYPE_PUBLIC => __d('blocks', 'Public'),
+				BlockCommonComponent::TYPE_LIMITED_PUBLIC => __d('blocks', 'Limited Public'),
+			),
 			'div' => false,
 			'legend' => false,
 			'error' => false,
 			'ng-model' => 'block.publicType',
 			'checked' => true,
 		)); ?>
-	<div class="row" collapse="block.publicType != 2">
-		<fieldset>
-			<div class="col-md-5 col-sm-5">
+	<div collapse="block.publicType != <?php echo BlockCommonComponent::TYPE_LIMITED_PUBLIC; ?>">
+		<div class="row" style="margin-bottom:5px;">
+			<div class="col-md-2">
+				<?php echo __d('blocks', 'Start'); ?>
+			</div>
+			<div class="col-md-10">
 				<div class="input-group">
 					<?php echo $this->Form->input('Block.from',
 						array(
@@ -49,6 +69,7 @@
 							'is-open' => 'isFrom',
 							'label' => false,
 							'div' => false,
+							'style' => 'min-width:170px',
 						)); ?>
 					<span class="input-group-btn">
 						<button type="button" class="btn btn-default" ng-click="showCalendar($event, 'from')">
@@ -56,20 +77,13 @@
 						</button>
 					</span>
 				</div>
-				<div class="has-error">
-					<?php if (isset($this->validationErrors['Block']['from'])): ?>
-					<?php foreach ($this->validationErrors['Block']['from'] as $message): ?>
-						<div class="help-block">
-							<?php echo $message ?>
-						</div>
-					<?php endforeach ?>
-					<?php endif; ?>
-				</div>
 			</div>
-			<div class="col-md-2 col-sm-2 text-center">
-			～
+		</div>
+		<div class="row" style="margin-bottom:5px;">
+			<div class="col-md-2">
+				<?php echo __d('blocks', 'End'); ?>
 			</div>
-			<div class="col-md-5 col-sm-5">
+			<div class="col-md-10">
 				<div class="input-group">
 					<?php echo $this->Form->input('Block.to',
 						array(
@@ -81,6 +95,7 @@
 							'is-open' => 'isTo',
 							'label' => false,
 							'div' => false,
+							'style' => 'min-width:170px',
 						)); ?>
 					<span class="input-group-btn">
 						<button type="button" class="btn btn-default" ng-click="showCalendar($event, 'to')">
@@ -98,6 +113,6 @@
 					<?php endif; ?>
 				</div>
 			</div>
-		</fieldset>
+		</div>
 	</div>
 </div>
