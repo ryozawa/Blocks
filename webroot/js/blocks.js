@@ -6,6 +6,7 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  */
 NetCommonsApp.controller('BlocksController', function($scope, dialogs, $http) {
+  /* frame setting START */
 
   $scope.blocks = {};
   $scope.block = {};
@@ -53,4 +54,6 @@ NetCommonsApp.controller('BlocksController', function($scope, dialogs, $http) {
         datepickerPopup: 'yyyy/MM/dd HH:mm',
         showButtonBar: false
       });
+
+      /* frame setting E N D */
     });

@@ -251,6 +251,8 @@ class Block extends BlocksAppModel {
 		return $block;
 	}
 
+	/* frame setting START */
+
 /**
  * get blocks by frame
  *
@@ -365,4 +367,6 @@ class Block extends BlocksAppModel {
 		$this->validates();
 		return $this->validationErrors ? false : true;
 	}
+
+	/* frame setting E N D */
 }

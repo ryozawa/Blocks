@@ -9,6 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 ?>
+<!-- frame setting START -->
 
 <?php echo $this->Form->hidden('Block.id', array('value' => $block['id'])); ?>
 
@@ -116,3 +117,5 @@
 		</div>
 	</div>
 </div>
+
+<!-- frame setting E N D -->
