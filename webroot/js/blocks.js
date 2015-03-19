@@ -8,8 +8,6 @@
 NetCommonsApp.controller('BlocksController', function($scope, dialogs, $http) {
   /* frame setting START */
 
-  $scope.blocks = {};
-  $scope.block = {};
   $scope.orderByField = 'block.name';
   $scope.isOrderDesc = false;
 

@@ -24,6 +24,27 @@ App::uses('BlocksAppModel', 'Blocks.Model');
 class Block extends BlocksAppModel {
 
 /**
+ * type private
+ *
+ * @var string
+ */
+	const TYPE_PRIVATE = '0';
+
+/**
+ * type public
+ *
+ * @var string
+ */
+	const TYPE_PUBLIC = '1';
+
+/**
+ * type limited public
+ *
+ * @var string
+ */
+	const TYPE_LIMITED_PUBLIC = '2';
+
+/**
  * Validation rules
  *
  * @var array
@@ -254,52 +275,6 @@ class Block extends BlocksAppModel {
 	/* frame setting START */
 
 /**
- * get blocks by frame
- *
- * @param int $roomId rooms.id
- * @param string $pluginKey plugins.key
- * @return array block data
- */
-	public function getBlocksByFrame($roomId, $pluginKey) {
-		$options = array(
-			'recursive' => -1,
-			'conditions' => array(
-				'room_id' => $roomId,
-				'plugin_key' => $pluginKey,
-			));
-
-		return $this->find('all', $options);
-	}
-
-/**
- * get block
- *
- * @param int $blockId blocks.id
- * @param int $roomId rooms id
- * @param string $pluginKey plugin key
- * @return array block data
- * @throws InternalErrorException
- */
-	public function getEditBlock($blockId, $roomId, $pluginKey) {
-		$options = array(
-			'recursive' => -1,
-			'conditions' => array(
-				'id' => $blockId,
-				'room_id' => $roomId,
-				'plugin_key' => $pluginKey,
-			));
-		$block = $this->find('first', $options);
-		if (! $block) {
-			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		}
-
-		$format = 'Y/m/d H:i';
-		$block['Block']['from'] = $this->__formatStrDate($block['Block']['from'], $format);
-		$block['Block']['to'] = $this->__formatStrDate($block['Block']['to'], $format);
-		return $block;
-	}
-
-/**
  * save block
  *
  * @param array $data received post data
@@ -312,7 +287,7 @@ class Block extends BlocksAppModel {
 		$dataSource = $this->getDataSource();
 		$dataSource->begin();
 		try {
-			if ($data['Block']['public_type'] !== BlockCommonComponent::TYPE_LIMITED_PUBLIC) {
+			if ($data['Block']['public_type'] !== self::TYPE_LIMITED_PUBLIC) {
 				unset($data['Block']['from']);
 				unset($data['Block']['to']);
 			}
@@ -339,21 +314,6 @@ class Block extends BlocksAppModel {
 			CakeLog::error($ex);
 			throw $ex;
 		}
-	}
-
-/**
- * format string date
- *
- * @param string $str string date
- * @param string $format date format
- * @return string format date
- */
-	private function __formatStrDate($str, $format) {
-		$timestamp = strtotime($str);
-		if ($timestamp === false) {
-			return null;
-		}
-		return date($format, $timestamp);
 	}
 
 /**

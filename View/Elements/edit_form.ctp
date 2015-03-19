@@ -43,9 +43,9 @@
 		array(
 			'type' => 'radio',
 			'options' => array(
-				BlockCommonComponent::TYPE_PRIVATE => __d('blocks', 'Private'),
-				BlockCommonComponent::TYPE_PUBLIC => __d('blocks', 'Public'),
-				BlockCommonComponent::TYPE_LIMITED_PUBLIC => __d('blocks', 'Limited Public'),
+				Block::TYPE_PRIVATE => __d('blocks', 'Private'),
+				Block::TYPE_PUBLIC => __d('blocks', 'Public'),
+				Block::TYPE_LIMITED_PUBLIC => __d('blocks', 'Limited Public'),
 			),
 			'div' => false,
 			'legend' => false,
@@ -53,7 +53,7 @@
 			'ng-model' => 'block.publicType',
 			'checked' => true,
 		)); ?>
-	<div collapse="block.publicType != <?php echo BlockCommonComponent::TYPE_LIMITED_PUBLIC; ?>">
+	<div collapse="block.publicType != <?php echo Block::TYPE_LIMITED_PUBLIC; ?>">
 		<div class="row" style="margin-bottom:5px;">
 			<div class="col-md-2">
 				<?php echo __d('blocks', 'Start'); ?>
@@ -77,6 +77,15 @@
 							<i class="glyphicon glyphicon-calendar"></i>
 						</button>
 					</span>
+				</div>
+				<div class="has-error">
+					<?php if (isset($this->validationErrors['Block']['from'])): ?>
+					<?php foreach ($this->validationErrors['Block']['from'] as $message): ?>
+						<div class="help-block">
+							<?php echo $message ?>
+						</div>
+					<?php endforeach ?>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
