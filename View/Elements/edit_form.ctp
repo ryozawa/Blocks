@@ -50,10 +50,10 @@
 			'div' => false,
 			'legend' => false,
 			'error' => false,
-			'ng-model' => 'block.publicType',
+			'ng-model' => 'block.public_type',
 			'checked' => true,
 		)); ?>
-	<div collapse="block.publicType != <?php echo Block::TYPE_LIMITED_PUBLIC; ?>">
+	<div collapse="block.public_type != <?php echo Block::TYPE_LIMITED_PUBLIC; ?>">
 		<div class="row" style="margin-bottom:5px;">
 			<div class="col-md-2">
 				<?php echo __d('blocks', 'Start'); ?>
