@@ -11,6 +11,8 @@
 ?>
 <!-- frame setting START -->
 
+<?php echo $this->Html->css('/blocks/css/blocks.css'); ?>
+
 <?php echo $this->Form->hidden('Block.id', array('value' => $block['id'])); ?>
 
 <div class="form-group">
@@ -54,7 +56,7 @@
 			'checked' => true,
 		)); ?>
 	<div collapse="block.publicType != <?php echo Block::TYPE_LIMITED_PUBLIC; ?>">
-		<div class="row" style="margin-bottom:5px;">
+		<div class="row nc-blocks-input-date">
 			<div class="col-md-2">
 				<?php echo __d('blocks', 'Start'); ?>
 			</div>
@@ -70,7 +72,6 @@
 							'is-open' => 'isFrom',
 							'label' => false,
 							'div' => false,
-							'style' => 'min-width:170px',
 						)); ?>
 					<span class="input-group-btn">
 						<button type="button" class="btn btn-default" ng-click="showCalendar($event, 'from')">
@@ -89,7 +90,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="row" style="margin-bottom:5px;">
+		<div class="row nc-blocks-input-date">
 			<div class="col-md-2">
 				<?php echo __d('blocks', 'End'); ?>
 			</div>
@@ -105,7 +106,6 @@
 							'is-open' => 'isTo',
 							'label' => false,
 							'div' => false,
-							'style' => 'min-width:170px',
 						)); ?>
 					<span class="input-group-btn">
 						<button type="button" class="btn btn-default" ng-click="showCalendar($event, 'to')">
