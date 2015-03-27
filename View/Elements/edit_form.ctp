@@ -52,7 +52,7 @@
 			'div' => false,
 			'legend' => false,
 			'error' => false,
-			'ng-model' => 'block.publicType',
+			'ng-model' => 'block.public_type',
 			'checked' => true,
 		)); ?>
 	<div collapse="block.publicType != <?php echo Block::TYPE_LIMITED_PUBLIC; ?>">
